@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>حملة توعية: مدارس التكنولوجيا التطبيقية</title>
+  <style>
+    body {
+      font-family: "Cairo", Arial, sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      direction: rtl;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 400px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      color: #222;
+    }
+
+    p {
+      margin: 10px 0;
+      color: #444;
+    }
+
+    input {
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 80%;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #voteCount {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>حملة: مدارس التكنولوجيا التطبيقية</h1>
+    <p>#مدارس_التكنولوجيا_التطبيقية_مظلومين</p>
+    <p>#من_فضلك_انا_طالب_تيكنولوجي</p>
+    <p>#مناشدة_الرئيس_السيسي</p>
+
+
+
+    <input type="text" id="name" placeholder="اسمك">
+    <input type="email" id="email" placeholder="إيميلك"><br>
+    <button onclick="submitVote()">اشترك / صوت</button>
+
+    <p id="voteCount">عدد المصوتين: 0</p>
+  </div>
+
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <script>
+    // حط هنا بيانات Firebase بتاعتك
+    const firebaseConfig = {
+  apiKey: "AIzaSyAIe1utCfZ2YMxdTkTqLtgTn5Ly0idKgsQ",
+  authDomain: "school-hashtag.firebaseapp.com",
+  projectId: "school-hashtag",
+  storageBucket: "school-hashtag.firebasestorage.app",
+  messagingSenderId: "237592257392",
+  appId: "1:237592257392:web:2a14e177d1cc299fc325b5",
+  measurementId: "G-S7M1ZYG5CR"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function submitVote() {
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+
+      if (!name || !email) {
+        alert("من فضلك اكتب الاسم والايميل");
+        return;
+      }
+
+      db.collection("votes").doc(email).set({
+        name: name,
+        email: email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        alert("✅ تم التصويت بنجاح!");
+        updateCount();
+      }).catch((error) => {
+        console.error("Error adding document: ", error);
+      });
+    }
+
+    function updateCount() {
+      db.collection("votes").get().then((snapshot) => {
+        document.getElementById("voteCount").innerText =
+          "عدد المصوتين: " + snapshot.size;
+      });
+    }
+
+    window.onload = updateCount;
+  </script>
+</body>
+</html>
